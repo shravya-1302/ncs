@@ -8,7 +8,8 @@
     "start": "node src/server.js",
     "db:schema": "mysql -u root -P 3307 ncs < database/schema.sql",
     "db:seed": "mysql -u root -P 3307 ncs < database/seed.sql",
-    "db:setup": "npm run db:schema && npm run db:seed"
+    "db:setup": "npm run db:schema && npm run db:seed",
+    "db:admin": "node scripts/createAdmin.js"
   },
   "keywords": [],
   "author": "",
