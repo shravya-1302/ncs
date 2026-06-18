@@ -37,3 +37,16 @@ VALUES
 (12, 7, 'AWS Core Services', NULL, NULL, 'Intro to EC2, S3, RDS and IAM.', 2),
 (13, 8, 'Google Cloud Overview', NULL, NULL, 'Intro to Google Cloud services.', 1),
 (14, 9, 'Azure Overview', NULL, NULL, 'Intro to Microsoft Azure services.', 1);
+
+INSERT IGNORE INTO users
+(id, name, email, phone, password_hash, role, is_verified)
+VALUES
+(
+  1,
+  'NCS Admin',
+  'admin@ncs.com',
+  '9999999999',
+  '$2b$10$ud3pQC0oGCUpEyZF9Jd3aOH.01.cXS7eI5qEXd88bVm57jzANuOSi',
+  'admin',
+  TRUE
+);
