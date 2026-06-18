@@ -1,6 +1,23 @@
-export default function AppLayout({ children, user, setPage, activePage }) {
+export default function AppLayout({
+  children,
+  user,
+  setPage,
+  activePage,
+  adminTab,
+  setAdminTab,
+}) {
+  const isAdmin = user?.role === "admin";
+
+  const goAdminTab = (tab) => {
+    if (setAdminTab) {
+      setAdminTab(tab);
+    }
+    setPage("admin-dashboard");
+  };
+
   const handleLogout = () => {
     localStorage.removeItem("ncs_token");
+    localStorage.removeItem("ncs_user");
     setPage("login");
   };
 
@@ -8,6 +25,19 @@ export default function AppLayout({ children, user, setPage, activePage }) {
     <button
       style={activePage === pageName ? styles.navActive : styles.navItem}
       onClick={() => setPage(pageName)}
+    >
+      {label}
+    </button>
+  );
+
+  const adminNavButton = (label, tabName) => (
+    <button
+      style={
+        activePage === "admin-dashboard" && adminTab === tabName
+          ? styles.navAdminActive
+          : styles.navAdmin
+      }
+      onClick={() => goAdminTab(tabName)}
     >
       {label}
     </button>
@@ -26,22 +56,21 @@ export default function AppLayout({ children, user, setPage, activePage }) {
           </div>
 
           <nav style={styles.nav}>
-            {navButton("Dashboard", "dashboard")}
-            {navButton("Explore Programs", "programs")}
-            {navButton("My Programs", "my-programs")}
-            {navButton("My Submissions", "my-submissions")}
-
-            {user?.role === "admin" && (
-              <button
-                style={
-                  activePage === "admin-submissions"
-                    ? styles.navAdminActive
-                    : styles.navAdmin
-                }
-                onClick={() => setPage("admin-submissions")}
-              >
-                Admin Reviews
-              </button>
+            {isAdmin ? (
+              <>
+                {adminNavButton("Overview", "overview")}
+                {adminNavButton("Program Applications", "applications")}
+                {adminNavButton("Students", "students")}
+                {adminNavButton("Programs", "programs")}
+                {adminNavButton("Project Submissions", "submissions")}
+              </>
+            ) : (
+              <>
+                {navButton("Dashboard", "dashboard")}
+                {navButton("Explore Programs", "programs")}
+                {navButton("My Programs", "my-programs")}
+                {navButton("My Submissions", "my-submissions")}
+              </>
             )}
           </nav>
         </div>

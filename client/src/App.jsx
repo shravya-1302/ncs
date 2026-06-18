@@ -11,6 +11,7 @@ import MySubmissions from "./pages/MySubmissions";
 import AdminSubmissions from "./pages/AdminSubmissions";
 import AppLayout from "./components/AppLayout";
 import { api } from "./api/api";
+import AdminDashboard from "./pages/AdminDashboard";
 
 function App() {
   const token = localStorage.getItem("ncs_token");
@@ -20,6 +21,7 @@ function App() {
   const [selectedProgramId, setSelectedProgramId] = useState(null);
   const [learningProgramId, setLearningProgramId] = useState(null);
   const [selectedLessonId, setSelectedLessonId] = useState(null);
+  const [adminTab, setAdminTab] = useState("overview");
 
   useEffect(() => {
     async function fetchUser() {
@@ -27,7 +29,16 @@ function App() {
 
       try {
         const res = await api.get("/auth/me");
-        setUser(res.data.user);
+        const loggedInUser = res.data.user;
+
+        setUser(loggedInUser);
+
+        // IMPORTANT: after refresh, send admin to admin dashboard
+        if (loggedInUser?.role === "admin") {
+          setPage("admin-dashboard");
+        } else {
+          setPage("dashboard");
+        }
       } catch (error) {
         localStorage.removeItem("ncs_token");
         localStorage.removeItem("ncs_user");
@@ -40,26 +51,46 @@ function App() {
   }, []);
 
   if (page === "register") {
-  return <Register setPage={setPage} setUser={setUser} />;
-}
+    return <Register setPage={setPage} setUser={setUser} />;
+  }
 
   const handleLoginSuccess = (freshUser) => {
-  setUser(freshUser);
+    setUser(freshUser);
 
-  if (freshUser?.role === "admin") {
-    setPage("dashboard");
-  } else {
-    setPage("dashboard");
-  }
-};
-
-if (page === "login") {
-  return <Login setPage={setPage} onLoginSuccess={handleLoginSuccess} />;
+    // IMPORTANT: admin and student should not go to same page
+    if (freshUser?.role === "admin") {
+  setAdminTab("overview");
+  setPage("admin-dashboard");
+} else {
+  setPage("dashboard");
 }
+  };
+
+  if (page === "login") {
+    return <Login setPage={setPage} onLoginSuccess={handleLoginSuccess} />;
+  }
 
   return (
-    <AppLayout user={user} setPage={setPage} activePage={page}>
-      {page === "dashboard" && <Dashboard setPage={setPage} user={user} />}
+<AppLayout
+  user={user}
+  setPage={setPage}
+  activePage={page}
+  adminTab={adminTab}
+  setAdminTab={setAdminTab}
+>      {page === "dashboard" && <Dashboard setPage={setPage} user={user} />}
+
+      {page === "admin-submissions" && (
+  <AdminSubmissions setPage={setPage} />
+)}
+
+      {page === "admin-dashboard" && (
+  <AdminDashboard
+    setPage={setPage}
+    user={user}
+    activeTab={adminTab}
+    setActiveTab={setAdminTab}
+  />
+)}
 
       {page === "programs" && (
         <Programs
@@ -100,7 +131,7 @@ if (page === "login") {
       {page === "my-submissions" && <MySubmissions setPage={setPage} />}
 
       {page === "admin-submissions" && (
-        <AdminSubmissions setPage={setPage} />
+        <AdminSubmissions setPage={setPage} user={user} />
       )}
     </AppLayout>
   );
