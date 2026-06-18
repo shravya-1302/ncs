@@ -50,3 +50,14 @@ VALUES
   'admin',
   TRUE
 );
+INSERT INTO users (name, email, password_hash, role)
+VALUES (
+  'NCS Admin',
+  'admin@ncs.com',
+  '$2a$10$QvJ7WH7n0nnl8gNlMeJY0u37oqx7CQBAjqDMuCNDrIskqYGzQR28C',
+  'admin'
+)
+ON DUPLICATE KEY UPDATE
+  name = VALUES(name),
+  password_hash = VALUES(password_hash),
+  role = VALUES(role);

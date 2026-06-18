@@ -25,7 +25,7 @@ export default function Login({ setPage }) {
     try {
       const res = await api.post("/auth/login", form);
 
-      localStorage.setItem("ncs_token", res.data.token);
+      console.log("LOGIN RESPONSE:", res.data);
       localStorage.setItem("ncs_user", JSON.stringify(res.data.user));
 
       setMessage("Login successful!");
