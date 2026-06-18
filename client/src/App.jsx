@@ -40,12 +40,22 @@ function App() {
   }, []);
 
   if (page === "register") {
-    return <Register setPage={setPage} />;
-  }
+  return <Register setPage={setPage} setUser={setUser} />;
+}
 
-  if (page === "login") {
-    return <Login setPage={setPage} />;
+  const handleLoginSuccess = (freshUser) => {
+  setUser(freshUser);
+
+  if (freshUser?.role === "admin") {
+    setPage("dashboard");
+  } else {
+    setPage("dashboard");
   }
+};
+
+if (page === "login") {
+  return <Login setPage={setPage} onLoginSuccess={handleLoginSuccess} />;
+}
 
   return (
     <AppLayout user={user} setPage={setPage} activePage={page}>

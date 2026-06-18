@@ -2,7 +2,7 @@ import { useState } from "react";
 import { api } from "../api/api";
 import PasswordInput from "../components/PasswordInput";
 
-export default function Login({ setPage }) {
+export default function Login({ setPage, onLoginSuccess }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -15,15 +15,24 @@ export default function Login({ setPage }) {
     setLoading(true);
 
     try {
-      const res = await api.post("/auth/login", {
+      const loginRes = await api.post("/auth/login", {
         email,
         password,
       });
 
-      console.log("LOGIN RESPONSE:", res.data);
-      localStorage.setItem("ncs_user", JSON.stringify(res.data.user));
+      const token = loginRes.data.token;
 
-      setPage("dashboard");
+      if (!token) {
+        setMessage("Login failed. Token missing from server.");
+        return;
+      }
+
+      localStorage.setItem("ncs_token", token);
+
+      const meRes = await api.get("/auth/me");
+      const freshUser = meRes.data.user;
+
+      onLoginSuccess(freshUser);
     } catch (error) {
       setMessage(error.response?.data?.message || "Login failed.");
     } finally {

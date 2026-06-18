@@ -1,7 +1,6 @@
 export default function AppLayout({ children, user, setPage, activePage }) {
   const handleLogout = () => {
     localStorage.removeItem("ncs_token");
-    localStorage.removeItem("ncs_user");
     setPage("login");
   };
 

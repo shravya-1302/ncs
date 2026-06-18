@@ -2,8 +2,7 @@ import { useState } from "react";
 import { api } from "../api/api";
 import PasswordInput from "../components/PasswordInput";
 
-export default function Register({ setPage }) {
-  const [name, setName] = useState("");
+export default function Register({ setPage, setUser }) {  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
@@ -26,6 +25,7 @@ export default function Register({ setPage }) {
 
       localStorage.setItem("ncs_token", res.data.token);
       localStorage.setItem("ncs_user", JSON.stringify(res.data.user));
+      setUser(res.data.user);
 
       setPage("dashboard");
     } catch (error) {
